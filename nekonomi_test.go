@@ -2,18 +2,12 @@ package nekonomi
 
 import "testing"
 
-func TestOptions(t *testing.T) {
-	_ = OptionSQLiteFilePath("/tmp/nekonomi_test/")
-	_ = OptionSchema("anothe_schema")
-	_ = OptionReadOnly()
-}
 func TestClient(t *testing.T) {
+	dbdir := "/tmp/"
 	dbid := "db_identifire"
-	opts := []Option{
-		OptionSQLiteFilePath("/tmp/nekonomi_test/"),
-	}
+	opts := []Option{}
 
-	client, err := New(dbid, opts)
+	client, err := New(dbdir, dbid, opts)
 	if err != nil {
 		t.Error(err)
 	}

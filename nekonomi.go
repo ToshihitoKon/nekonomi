@@ -11,15 +11,17 @@ var (
 )
 
 type Client struct {
-	DbId   string
-	Schema string
+	dbdir    string
+	dbId     string
+	schema   string
+	readOnly bool
 }
 
-func New(dbId string, opts []Option) (*Client, error) {
+func New(Dbdir, dbId string, opts []Option) (*Client, error) {
 	var err error
 	client := &Client{
-		DbId:   dbId,
-		Schema: "default",
+		dbdir: Dbdir,
+		dbId:  dbId,
 	}
 
 	for _, opt := range opts {
@@ -49,43 +51,4 @@ func (c *Client) SchemaList() ([]string, error) {
 }
 func (c *Client) SchemaSet(schema string) error {
 	return nil
-}
-
-type Option interface {
-	apply(*Client) (*Client, error)
-}
-
-type optSQLiteFilePath struct {
-	path string
-}
-
-func OptionSQLiteFilePath(path string) *optSQLiteFilePath {
-	return &optSQLiteFilePath{
-		path: path,
-	}
-}
-func (o *optSQLiteFilePath) apply(c *Client) (*Client, error) {
-	return c, nil
-}
-
-type optSchema struct {
-	schema string
-}
-
-func OptionSchema(schema string) *optSchema {
-	return &optSchema{
-		schema: schema,
-	}
-}
-func (o *optSchema) apply(c *Client) (*Client, error) {
-	return c, nil
-}
-
-type optReadOnly struct{}
-
-func OptionReadOnly() *optReadOnly {
-	return &optReadOnly{}
-}
-func (o *optReadOnly) apply(c *Client) (*Client, error) {
-	return c, nil
 }
