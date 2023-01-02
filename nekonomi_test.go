@@ -35,6 +35,14 @@ func TestClient(t *testing.T) {
 		t.Errorf("client.Read result mismatch (-want +got):\n%s", diff)
 	}
 
+	listedKeys, err := client.ListKeys()
+	if err != nil {
+		t.Error(err)
+	}
+	if diff := cmp.Diff(listedKeys, []string{"key1"}); diff != "" {
+		t.Errorf("client.ListKeys result mismatch (-want +got):\n%s", diff)
+	}
+
 	_, err = client.Update("key", "value")
 	if err != nil {
 		t.Error(err)

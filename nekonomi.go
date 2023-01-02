@@ -122,6 +122,29 @@ func (c *Client) Write(key, value string) (string, error) {
 
 	return value, nil
 }
+
+func (c *Client) ListKeys() ([]string, error) {
+	stmt := fmt.Sprintf(`SELECT key FROM "%s"`, c.schema)
+	rows, err := c.db.Query(stmt)
+	if err != nil {
+		return []string{}, errors.Wrapf(err, "error: db.Query")
+	}
+
+	var buffer string
+	var keys []string
+
+	for rows.Next() {
+		if err := rows.Scan(&buffer); err != nil {
+			return []string{}, errors.Wrapf(err, "error: rows.Scan")
+		}
+		keys = append(keys, buffer)
+	}
+	if err := rows.Err(); err != nil {
+		return []string{}, errors.Wrapf(err, "error: rows.Err")
+	}
+	return keys, nil
+}
+
 func (c *Client) Update(key, value string) (string, error) {
 	return "", nil
 }
