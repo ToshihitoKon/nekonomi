@@ -43,7 +43,16 @@ func TestClient(t *testing.T) {
 		t.Errorf("client.ListKeys result mismatch (-want +got):\n%s", diff)
 	}
 
-	_, err = client.Update("key", "value")
+	_, err = client.Update("key1", "value1_updated")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = client.ForceWrite("key1", "value1_updated2")
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = client.ForceWrite("key2", "value2")
 	if err != nil {
 		t.Error(err)
 	}

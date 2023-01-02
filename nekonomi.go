@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 )
 
@@ -67,9 +67,9 @@ func New(dbDir, dbId string, opts []Option) (*Client, error) {
 	createTableStmt := fmt.Sprintf(`
 	CREATE TABLE IF NOT EXISTS "%s" (
 		key TEXT PRIMARY KEY,
-		value TEXT,
-		created_at_utc TEXT,
-		updated_at_utc TEXT
+		value TEXT NOT NULL,
+		created_at_utc TEXT NOT NULL DEFAULT (DATETIME('now')),
+		updated_at_utc TEXT NOT NULL DEFAULT (DATETIME('now'))
 	);`, client.schema)
 
 	if _, err := db.Exec(createTableStmt); err != nil {
@@ -103,18 +103,31 @@ func (c *Client) Read(key string) (string, error) {
 	return res.value, nil
 }
 
+func (c *Client) ForceWrite(key, value string) (string, error) {
+	result, err := c.Write(key, value)
+	if err != nil {
+		var sqliteErr sqlite3.Error
+		if !(errors.As(err, &sqliteErr) &&
+			errors.Is(sqliteErr.Code, sqlite3.ErrConstraint)) {
+			return "", errors.Wrapf(err, "error: db.Write")
+		}
+		result, err = c.Update(key, value)
+		if err != nil {
+			return "", errors.Wrapf(err, "error: db.Update")
+		}
+	}
+
+	return result, err
+}
+
 func (c *Client) Write(key, value string) (string, error) {
 	stmt := fmt.Sprintf(`
 	INSERT INTO "%s" (
 		key,
-		value,
-		created_at_utc,
-		updated_at_utc
+		value
 	) VALUES (
 		"%s",
-		"%s",
-		datetime('now'),
-		datetime('now')
+		"%s"
 	);`, c.schema, key, value)
 	if _, err := c.db.Exec(stmt); err != nil {
 		return "", errors.Wrapf(err, "error: db.Exec")
@@ -146,7 +159,14 @@ func (c *Client) ListKeys() ([]string, error) {
 }
 
 func (c *Client) Update(key, value string) (string, error) {
-	return "", nil
+	stmt := fmt.Sprintf(`
+		UPDATE "%s" SET value = "%s", updated_at_utc = DATETIME('now') WHERE key = "%s"
+	;`, c.schema, value, key)
+	if _, err := c.db.Exec(stmt); err != nil {
+		return "", errors.Wrapf(err, "error: db.Exec")
+	}
+
+	return value, nil
 }
 
 func (c *Client) Delete(key string) (string, error) {
