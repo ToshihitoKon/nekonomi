@@ -1,10 +1,12 @@
-workflow_dispatch:
-  inputs:
-    method:
-      description: |
-        Which number to increment in the semantic versioning.
-        Set 'major', 'minor' or 'patch'.
-      required: true
+name: Release CLI to the GitHub Release
+on:
+  workflow_dispatch:
+    inputs:
+      method:
+        description: |
+          Which number to increment in the semantic versioning.
+          Set 'major', 'minor' or 'patch'.
+        required: true
 jobs:
   release:
     name: Release
