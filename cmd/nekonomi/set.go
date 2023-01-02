@@ -36,7 +36,7 @@ func set(key, value string) {
 	}
 	defer nc.Close()
 
-	if _, err := nc.Write(key, value); err != nil {
+	if _, err := nc.ForceWrite(key, value); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
