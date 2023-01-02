@@ -19,20 +19,20 @@ jobs:
         if: github.ref != 'refs/heads/main'
         run: exit 1
       - name: Checkout Sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Bump-up Semantic Version
         uses: kyoh86/git-vertag-action@v1.1
         with:
           # method: "major", "minor" or "patch" to update tag with semver
           method: "${{ github.event.inputs.method }}"
       - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.19
+        uses: actions/setup-go@v3
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: release --rm-dist
+          distribution: goreleaser
+          version: latest
           workdir: cmd/nekonomi
+          args: release --rm-dist
