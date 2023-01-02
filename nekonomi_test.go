@@ -1,25 +1,38 @@
 package nekonomi
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/google/go-cmp/cmp"
+)
 
 func TestClient(t *testing.T) {
-	dbdir := "/tmp/"
-	dbid := "db_identifire"
-	opts := []Option{}
+	dbdir := "/tmp"
+	dbid := "nekonomi_test"
+	opts := []Option{
+		OptionResetDatabase(),
+	}
 
 	client, err := New(dbdir, dbid, opts)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	writtenValue, err := client.Write("key1", "value1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(writtenValue, "value1"); diff != "" {
+		t.Errorf("client.Write result mismatch (-want +got):\n%s", diff)
 	}
 
-	_, err = client.Read("key")
+	readValue, err := client.Read("key1")
 	if err != nil {
 		t.Error(err)
 	}
-
-	_, err = client.Write("key", "value")
-	if err != nil {
-		t.Error(err)
+	if diff := cmp.Diff(readValue, "value1"); diff != "" {
+		t.Errorf("client.Read result mismatch (-want +got):\n%s", diff)
 	}
 
 	_, err = client.Update("key", "value")

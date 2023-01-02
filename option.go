@@ -27,3 +27,13 @@ func (o *optReadOnly) apply(c *Client) (*Client, error) {
 	c.readOnly = true
 	return c, nil
 }
+
+type optResetDatabase struct{}
+
+func OptionResetDatabase() *optResetDatabase {
+	return &optResetDatabase{}
+}
+func (o *optResetDatabase) apply(c *Client) (*Client, error) {
+	c.resetDatabase = true
+	return c, nil
+}
