@@ -1,0 +1,19 @@
+builds:
+  -
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 6
+    goamd64:
+      - v1
+    dir: cmd/nekonomi
+    overrides:
+      - goos: linux
+        goarch: arm64
+        env:
+          - CGO_ENABLED=1

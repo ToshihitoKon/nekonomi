@@ -35,5 +35,4 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          workdir: cmd/nekonomi
-          args: release --rm-dist
+          args: release --rm-dist --config .goreleaser.yml
