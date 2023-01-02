@@ -43,7 +43,7 @@ func New(dbDir, dbId string, opts []Option) (*Client, error) {
 	}
 
 	// Home Directory to Real path
-	filepath := path.Join(dbDir, dbId+"_nekonomi.db")
+	filepath := path.Join(dbDir, dbId+".nekonomi.db")
 	if strings.HasPrefix(filepath, "~/") {
 		dirname, _ := os.UserHomeDir()
 		filepath = path.Join(dirname, filepath[2:])
