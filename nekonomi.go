@@ -3,7 +3,9 @@ package nekonomi
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"path"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
@@ -40,7 +42,14 @@ func New(dbDir, dbId string, opts []Option) (*Client, error) {
 		}
 	}
 
-	db, err := sql.Open("sqlite3", path.Join(dbDir, dbId+"_nekonomi.db"))
+	// Home Directory to Real path
+	filepath := path.Join(dbDir, dbId+"_nekonomi.db")
+	if strings.HasPrefix(filepath, "~/") {
+		dirname, _ := os.UserHomeDir()
+		filepath = path.Join(dirname, filepath[2:])
+	}
+
+	db, err := sql.Open("sqlite3", filepath)
 	if err != nil {
 		return nil, errors.Wrap(err, "sql.Open failed")
 	}
