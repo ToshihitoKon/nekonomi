@@ -2,6 +2,14 @@
 
 simple KVS library and command line Tool
 
+## CLI
+
+```
+go install github.com/ToshihitoKon/nekonomi/cmd/nekonomi@latest
+```
+
+## Library
+
 ```go
 import (
     "github.com/ToshihitoKon/nekonomi"
